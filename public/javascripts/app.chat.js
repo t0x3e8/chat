@@ -5,7 +5,7 @@ app.chat = (function() {
 	
 	var configMap = {
 			mainHtml : String() + 
-				'<div class="chat-bar"></div>' +
+				'<div class="chat-bar">CHAT</div>' +
 				'<div class="chat-content"></div>' + 
 				'<div class="chat-interaction">' +
 					'<div class="chat-input">' + 
@@ -18,18 +18,18 @@ app.chat = (function() {
 			usersModel : null
 		},
 		jQueryMap = {
-			$chat: null, 
+			$container: null, 
 			$sendBtn: null,
 			$chatInput : null
 		},
 		initModule, configModule;
 		
-	initModule = function($chat) {
-		jQueryMap.$chat = $chat;
-		jQueryMap.$sendBtn = $chat.find('.chat-send input');
-		jQueryMap.$chatInput = $chat.find('.chat-input input');
-		console.log('chat: ' + jQueryMap.$chat);
-		jQueryMap.$chat.html(configMap.mainHtml);
+	initModule = function($container) {
+		jQueryMap.$container = $container;
+		jQueryMap.$sendBtn = $container.find('.chat-send input');
+		jQueryMap.$chatInput = $container.find('.chat-input input');
+		
+		jQueryMap.$container.html(configMap.mainHtml);
 	};
 
 	configModule = function(inputMap) {
