@@ -2,16 +2,17 @@
 app.model = (function() {
 	'use strict';
 	
-	var users, communication;
+	var people, communication;
 	var initModule;
 	
 	initModule = function() {
-		
+		people = app.model.people;
+		people.initModule();
 	};
 	
 	return {
 		'initModule': initModule,
-		'users': users,
+		'people': people,
 		'communication': communication
 	};
 }());

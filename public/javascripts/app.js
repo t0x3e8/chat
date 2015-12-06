@@ -1,4 +1,3 @@
-/* global app*/
 
 var app = (function() {
 	'use strict';

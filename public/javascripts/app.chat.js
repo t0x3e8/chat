@@ -5,7 +5,7 @@ app.chat = (function() {
 	
 	var configMap = {
 			mainHtml : String() + 
-				'<div class="chat-bar">CHAT</div>' +
+				'<div class="bar"><span class="bar-header">CHAT</span></div>' +
 				'<div class="chat-content"></div>' + 
 				'<div class="chat-interaction">' +
 					'<div class="chat-input">' + 
@@ -15,7 +15,7 @@ app.chat = (function() {
 						'<input type="submit"></input>' + 
 					'</div>' + 
 				'</div>',
-			usersModel : null
+			peopleModel : null
 		},
 		jQueryMap = {
 			$container: null, 

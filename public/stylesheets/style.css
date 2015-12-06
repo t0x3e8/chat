@@ -1,40 +1,56 @@
+/* Common box */
+.bar {
+	position: absolute;
+	top: 0;
+	left: 0;
+	right: 0;
+	height: 25px;	
+	background: midnightblue;
+	border-top-left-radius: 5px;
+	border-top-right-radius: 5px;	
+	padding-left: 10px;
+}
+
+.bar-header {
+	display: inline-block;
+	vertical-align: middle;
+	color: white;
+	font-size: larger;
+}
+
+.box {
+	border: 1px lightgrey solid;
+	border-top-left-radius: 5px;
+	border-top-right-radius: 5px;
+	background: aliceblue;
+	font-size: small;
+	font-family: Verdana, Geneva, Tahoma, sans-serif;
+	
+}
+
+/* Common box ended */
+
+.center {
+	text-align: center;
+}
+
 .logging {
+	position: absolute;
 	width: 125px;
 	height: 35px;
 	right: 3px;
 	top: 3px;
-	position: absolute;
 	border-width: 1px lightgrey solid;
 	border-radius: 5px;
 	background: midnightblue;
-	color: white;
-	text-align: center;
 }
 
 .people {
+	position: absolute;
 	width: 200px;
 	min-height: 400px;
 	bottom: 3px;
 	right: 310px;
-	position: absolute;
-	border: 1px lightgrey solid;
-	border-top-left-radius: 5px;
-	border-top-right-radius: 5px;
-}
-
-.people-bar {
-	padding: 5px;
-	position: absolute;
-	height: 15px;
-	top: 0;
-	left: 0;
-	right: 0;
-	background: midnightblue;
-	border-top-left-radius: 5px;
-	border-top-right-radius: 5px;
-	color: white;
-	vertical-align: middle;
-	font-size: larger;
 }
 
 .people-content {
@@ -43,9 +59,6 @@
 	left: 0;
 	right: 0;
 	bottom: 0;
-	background: aliceblue;
-	font-size: small;
-	font-family: Verdana, Geneva, Tahoma, sans-serif;
 }
 
 .people-content p {
@@ -54,29 +67,11 @@
 }
 
 .chat {
+	position: absolute;
 	width: 300px;
 	min-height: 400px;
 	bottom: 3px;
 	right: 3px;
-	position: absolute;
-	border: 1px lightgrey solid;
-	border-top-left-radius: 5px;
-	border-top-right-radius: 5px;
-}
-
-.chat-bar {
-	padding: 5px;
-	position: absolute;
-	height: 15px;
-	top: 0;
-	left: 0;
-	right: 0;
-	background: midnightblue;
-	border-top-left-radius: 5px;
-	border-top-right-radius: 5px;
-	color: white;
-	vertical-align: middle;
-	font-size: larger;
 }
 
 .chat-content {
@@ -85,7 +80,6 @@
 	left: 0;
 	right: 0;
 	bottom: 25px;
-	background: aliceblue;
 }
 
 .chat-msg {
@@ -114,7 +108,6 @@
 	right: 0;
 	width: 100%;
 	height: 25px;
-	background: red;
 	border-top: 1px lightgrey solid;
 }
 

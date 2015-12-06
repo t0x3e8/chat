@@ -19,6 +19,12 @@
     "tests"
   ],
   "dependencies": {
-    "jquery": "~2.1.4"
+    "jquery": "~2.1.4",
+    "taffy": "*"
+  },
+  "overrides" : {
+    "taffy": {
+      "main" : "taffy.js"
+    }
   }
 }

@@ -5,9 +5,9 @@ app.shell = (function() {
 	
 	var configMap = {
 		mainHtml : 	String() + 
-					'<div class="logging">Log in</div>' +
-					'<div class="people"></div>' +
-					'<div class="chat"></div>'
+					'<div class="logging"><span class="center">Log in</span></div>' +
+					'<div class="people box"></div>' +
+					'<div class="chat box"></div>'
 		},
 		jQueryMap ={
 			$container : null,
@@ -26,12 +26,12 @@ app.shell = (function() {
 		jQueryMap.$people = $container.find('.people');
 		
 		app.people.configModule({
-			'usersModel' : app.model.users
+			'peopleModel' : app.model.people
 		});
 		app.people.initModule(jQueryMap.$people);
 		
 		app.chat.configModule({
-			'usersModel' : app.model.users
+			'peopleModel' : app.model.people
 		});
 		app.chat.initModule(jQueryMap.$chat);
 	};
