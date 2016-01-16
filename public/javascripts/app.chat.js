@@ -1,4 +1,4 @@
-
+/* global app */
 
 app.chat = (function() {
 	'use strict';

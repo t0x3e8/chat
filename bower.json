@@ -20,11 +20,15 @@
   ],
   "dependencies": {
     "jquery": "~2.1.4",
-    "taffy": "*"
+    "taffy": "*",
+    "socket.io-client": "~1.3.7"
   },
-  "overrides" : {
+  "overrides": {
     "taffy": {
-      "main" : "taffy.js"
+      "main": "taffy.js"
+    },
+    "socket.io-client": {
+      "main": "socket.io.js"
     }
   }
 }
