@@ -1,12 +1,14 @@
 {
-	"version": "0.1.0",
+	"version": "0.2.0",
 	// List of configurations. Add new configurations or edit existing ones.
 	"configurations": [
 		{
 			// Name of configuration; appears in the launch configuration drop down menu.
-			"name": "Launch ./bin/www",
+			"name": "Launch",
 			// Type of configuration.
 			"type": "node",
+            
+			"request": "launch",
 			// Workspace relative or absolute path to the program.
 			"program": "./bin/www",
 			// Automatically stop program after launch.
@@ -21,8 +23,10 @@
 			"runtimeArgs": ["--nolazy"],
 			// Environment variables passed to the program.
 			"env": {
-				"NODE_ENV": "development"
+				"NODE_ENV": "development",
+                "DEBUG": "chat:*"
 			},
+			"externalConsole": false,
 			// Use JavaScript source maps (if they exist).
 			"sourceMaps": false,
 			// If JavaScript source maps are enabled, the generated code is expected in this directory.
@@ -31,11 +35,14 @@
 		{
 			"name": "Attach",
 			"type": "node",
-			// TCP/IP address. Default is "localhost".
-			"address": "localhost",
-			// Port to attach to.
-			"port": 5858,
-			"sourceMaps": false
-		}
+			"request": "attach",
+			"port": 5858
+		},
+        {
+            "name": "Test HTML",
+            "type": "chrome",
+            "request": "launch",
+            "file": "./views/test.html"
+        }
 	]
 }

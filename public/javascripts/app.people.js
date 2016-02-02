@@ -31,19 +31,30 @@ app.people = (function () {
     };
 
     populatePeople = function (data) {
-        var i, currentUserId, $newElement;
+        var i, currentUserId, $newElement, personSelectedCallback;
         console.log('people list: ' + data);
-        // 
-        // // clean list
+
+        // clean list
         jQueryMap.$peopleList.empty();
-        // // populate list
+        
+        // populate list
         if (data) {
             currentUserId = configMap.peopleModel.getCurrentUser()._id;
                     
-            for(i=0; i<data.length; i++) {
+            personSelectedCallback = function (person) {
+                return function () {
+                    app.messenger.notify('chat-startchat', person);
+                }
+            }
+
+            for (i = 0; i < data.length; i++) {
                 $newElement = $('<p>').html(data[i].name);
-                if (data[i]._id === currentUserId) $newElement.addClass('me');
-                
+
+                if (data[i]._id === currentUserId)
+                    $newElement.addClass('me');
+                else {
+                    $newElement.on('dblclick', personSelectedCallback(data[i]));
+                }
                 jQueryMap.$peopleList.append($newElement);
             }
         }

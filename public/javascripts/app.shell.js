@@ -19,27 +19,36 @@ app.shell = (function () {
         mainHtml = String() +
             '<div class="logging"><span>LOG IN</span></div>' +
             '<div class="people box"></div>' +
-            '<div class="chat box"></div>',
+            '<div class="chat box box1 hidden"></div>' +
+            '<div class="chat box box2 hidden"></div>' +
+            '<div class="chat box box3 hidden"></div>',
         jQueryMap = {
             $container: null,
             $logging: null,
-            $chat: null,
+            $chat1: null,
+            $chat2: null,
+            $chat3: null,
             $people: null
         },
-        raiseLoginEvent, setjQueryMap, setEvents,
-        initModule;
+        raiseLoginEvent, startNewChatEvent, setjQueryMap, setEvents,
+        initModule, initChat;
 
     setjQueryMap = function ($container) {
         jQueryMap.$logging = $container.children('.logging');
-        jQueryMap.$chat = $container.find('.chat');
+        jQueryMap.$chat1 = $container.find('.box1');
+        jQueryMap.$chat2 = $container.find('.box2');
+        jQueryMap.$chat3 = $container.find('.box3');
         jQueryMap.$people = $container.find('.people');
     };
 
     setEvents = function () {
         jQueryMap.$logging.on('click', raiseLoginEvent);
+        app.messenger.subscribe({ eventName: 'chat-startchat', action: startNewChatEvent})
     };
 
     raiseLoginEvent = function (event) {
+         /// TODO: disable clicking to avoid double logging
+        
         var userMap, userName;
 
         while (!userName) {
@@ -55,6 +64,19 @@ app.shell = (function () {
             jQueryMap.$logging.hide(300);                
         });
     }
+    
+    startNewChatEvent = function(person) {
+        jQueryMap.$chat1.show(300);
+        initChat(jQueryMap.$chat1, person);
+    }
+    
+    initChat = function($chat, person) {
+        app.chat.configModule({
+            'peopleModel': peopleModel,
+            'chattee' : person
+        });
+        app.chat.initModule($chat);
+    }
 
     initModule = function ($container) {
         jQueryMap.$container = $container;
@@ -69,15 +91,10 @@ app.shell = (function () {
         });
         app.people.initModule(jQueryMap.$people);
 
-        app.chat.configModule({
-            'peopleModel': peopleModel
-        });
-        app.chat.initModule(jQueryMap.$chat);
-
         setEvents();
     };
 
     return {
         initModule: initModule
     };
-} ());
+}());

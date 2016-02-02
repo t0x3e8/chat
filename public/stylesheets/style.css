@@ -24,12 +24,32 @@
 	background: aliceblue;
 	font-size: small;
 	font-family: Verdana, Geneva, Tahoma, sans-serif;
-	
+}
+
+.box1 {
+	bottom: 1em;
+	right: 1em;    
+}
+
+.box2 {
+	bottom: 1em;
+	right: 24em;
+}
+
+.box3 {
+	bottom: 1em;
+	right: 47em;
+    
 }
 
 /* Common box ended */
+
 .center {
 	text-align: center;
+}
+
+.hidden {
+    display: none;
 }
 
 .logging {
@@ -66,7 +86,13 @@
 .people-content p {
 	padding-left: 1em;
 	padding-right: 1em;
+    display: block;
 }
+
+.people-content p:hover {
+	font-weight: bold;
+}
+
 
 .people-content .me {
     color: red;
@@ -76,8 +102,6 @@
 	position: absolute;
 	width: 22em;
 	min-height: 30em;
-	bottom: 1em;
-	right: 1em;
 }
 
 .chat-content {
