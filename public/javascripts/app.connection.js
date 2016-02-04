@@ -14,8 +14,11 @@ app.connection = (function () {
     'use strict';
 
     var socket = io('http://localhost:3001', { autoConnect: false }),
-        connect, disconnect, emitLogin, subscribeEvents, unsubscribeEvents;
-
+        connect, disconnect, emitLogin, subscribeEvents, unsubscribeEvents, emitMsg, receiveMsg;
+    var peopleListEvent = 'chat-peoplelist',
+        msgEvent = 'chat-msg';
+        
+        
     connect = function (callback) {
         if (!socket.connected) {
             socket.on('connect', function () {
@@ -28,7 +31,7 @@ app.connection = (function () {
         else {
             callback();
         }
-    }
+    };
 
     disconnect = function () {
         if (!socket.disconnected) {
@@ -36,23 +39,28 @@ app.connection = (function () {
 
             unsubscribeEvents();
         }
-    }
+    };
 
     subscribeEvents = function () {
-        socket.on('chat-peoplelist', function (data) {
+        socket.on(peopleListEvent, function (data) {
             app.messenger.notify('peopleUpdated', data);
         });
-    }
+        
+        socket.on(msgEvent, function(data) {
+            app.messenger.notify('newMsg', data);
+        })
+    };
 
     unsubscribeEvents = function () {
-        socket.off('chat-peoplelist');
-    }
+        socket.off(peopleListEvent);
+        socket.off(msgEvent);
+    };
 
     emitLogin = function (userMap, callback) {
         var eventName = 'chat-login';
 
         connect(function () {
-            console.log('emitLogin ' + socket.connected);
+            console.log('Emitting login. Connected: ' + socket.connected);
             if (socket.connected) {
                 socket.once(eventName, function (res) {
                     callback(res);
@@ -61,9 +69,18 @@ app.connection = (function () {
                 socket.emit(eventName, userMap);
             }
         });
-    }
+    };
+
+    emitMsg = function (msg, fromId, toId) {
+        console.log('Emitting msg. Connected: ' + socket.connected);
+
+        if (socket.connected) {
+            socket.emit(msgEvent, { msg: msg, fromId: fromId, toId: toId });
+        }
+    };
 
     return {
-        'emitLogin': emitLogin
+        'emitLogin': emitLogin,
+        'emitMsg': emitMsg
     };
 })();

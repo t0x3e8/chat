@@ -111,6 +111,10 @@
 	right: 0;
 	bottom: 2em;
 	border-bottom: .1em lightgrey solid;
+    padding: 0 1em;
+    overflow-x: hidden;
+    overflow-y: scroll;
+    margin-bottom: 0;
 }
 
 .chat-msg {
@@ -121,14 +125,22 @@
 	border: solid 0.1 em rgba(0, 0, 0, 0.5);
 	border-radius: 1em;
 	word-wrap: break-word;
-	margin-bottom: 1em;
-	padding: .5em 2em;
+	margin-bottom: .7em;
+	padding: .5em 1em;
 	box-sizing: border-box;
 	text-shadow: 0 .1em .1em rgba(255, 255, 255, 0.7);
+    background-color: gainsboro;
+    list-style-type: none;
+    margin-left: 0;
+    margin-right: 2em;
 }
 
 .chat-msg-right {
-	float: right
+	float: right;
+    background-color: lightblue;
+    text-align: right;
+    margin-left: 2em;
+    margin-right: 0;
 }
 
 .chat-interaction {	
@@ -154,6 +166,7 @@
     height: 100%;
 	border: none;
     box-sizing: border-box; /*when you miss single pixel */
+    padding-left: 1em;
 }
 
 .chat-send {

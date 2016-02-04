@@ -5,13 +5,13 @@ var chatController = function (io) {
 
     var emitPeopleList;
     var debug = require('debug')('chat:socket');
-    var util = require("util");
     var mongoose = require('mongoose');
     var User = mongoose.model('User');
-    
+
     var loginEvent = 'chat-login';
     var logoutEvent = 'chat-logout';
     var peopleListEvent = 'chat-peoplelist';
+    var msgEvent = 'chat-msg';
 
     emitPeopleList = function () {
         User
@@ -33,8 +33,18 @@ var chatController = function (io) {
             user.save(function (err, res) {
                 socket.emit(loginEvent, { succeded: err === null, user: user });
                 emitPeopleList();
-// console.log(util.format("Format the object: %0", res));
                 // debug('Client connected and added. Err: ' + err + ', Result: ');
+            });
+        });
+
+        socket.on(msgEvent, function (msgMap) {
+            var msg = msgMap.msg;
+            var fromId = msgMap.fromId;
+            var toId = msgMap.toId;
+
+            User.findById(toId, function (err, recipient) {
+                if (io.sockets.connected[recipient.socketId])
+                    io.sockets.connected[recipient.socketId].emit(msgEvent, { msg: msg, fromId: fromId });
             });
         });
 

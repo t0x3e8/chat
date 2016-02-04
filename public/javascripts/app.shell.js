@@ -15,13 +15,14 @@
 app.shell = (function () {
     'use strict';
 
-    var peopleModel = null,
-        mainHtml = String() +
+    var mainHtml = String() +
             '<div class="logging"><span>LOG IN</span></div>' +
             '<div class="people box"></div>' +
             '<div class="chat box box1 hidden"></div>' +
             '<div class="chat box box2 hidden"></div>' +
             '<div class="chat box box3 hidden"></div>',
+        peopleModel = null,
+        connection = null,
         jQueryMap = {
             $container: null,
             $logging: null,
@@ -30,8 +31,8 @@ app.shell = (function () {
             $chat3: null,
             $people: null
         },
-        raiseLoginEvent, startNewChatEvent, setjQueryMap, setEvents,
-        initModule, initChat;
+        raiseLoginEvent, startNewChatEvent, newMsgEvent,
+        setjQueryMap, setEvents, initModule, initChat;
 
     setjQueryMap = function ($container) {
         jQueryMap.$logging = $container.children('.logging');
@@ -43,11 +44,13 @@ app.shell = (function () {
 
     setEvents = function () {
         jQueryMap.$logging.on('click', raiseLoginEvent);
-        app.messenger.subscribe({ eventName: 'chat-startchat', action: startNewChatEvent})
+        
+        app.messenger.subscribe({ eventName: 'chat-startchat', action: startNewChatEvent })
+        app.messenger.subscribe({ eventName: 'newMsg', action: newMsgEvent});
     };
 
     raiseLoginEvent = function (event) {
-         /// TODO: disable clicking to avoid double logging
+        /// TODO: disable clicking to avoid double logging
         
         var userMap, userName;
 
@@ -61,19 +64,24 @@ app.shell = (function () {
         userMap = peopleModel.createUser({ name: userName });
 
         peopleModel.login(userMap, function () {
-            jQueryMap.$logging.hide(300);                
+            jQueryMap.$logging.hide(300);
         });
     }
-    
-    startNewChatEvent = function(person) {
+
+    startNewChatEvent = function (person) {
         jQueryMap.$chat1.show(300);
         initChat(jQueryMap.$chat1, person);
     }
     
-    initChat = function($chat, person) {
+    newMsgEvent = function(data) {
+        app.chat.newMsg(data.msg);
+    }
+
+    initChat = function ($chat, person) {
         app.chat.configModule({
-            'peopleModel': peopleModel,
-            'chattee' : person
+            'connection': connection,
+            'me' : peopleModel.getCurrentUser(),
+            'chattee': person
         });
         app.chat.initModule($chat);
     }
@@ -85,7 +93,8 @@ app.shell = (function () {
 
         app.model.initModule();
         peopleModel = app.model.people;
-
+        connection = app.connection;
+        
         app.people.configModule({
             'peopleModel': peopleModel
         });
@@ -97,4 +106,4 @@ app.shell = (function () {
     return {
         initModule: initModule
     };
-}());
+} ());

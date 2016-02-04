@@ -2,7 +2,7 @@
 app.model = (function() {
 	'use strict';
 	
-	var people, communication;
+	var people, chat;
 	var initModule;
 	
 	initModule = function() {
@@ -13,6 +13,6 @@ app.model = (function() {
 	return {
 		'initModule': initModule,
 		'people': people,
-		'communication': communication
+		'chat': chat
 	};
 }());

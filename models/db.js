@@ -3,8 +3,8 @@
 var mongoose = require('mongoose');
 var debug = require('debug')('chat:db');
 var Schema = mongoose.Schema;
-var mongoURI = 'mongodb://localhost:27017/chatDB';
-//var mongoURI = 'mongodb://192.168.1.9:27017/chatDB';
+// var mongoURI = 'mongodb://localhost:27017/chatDB';
+var mongoURI = 'mongodb://192.168.1.9:27017/chatDB';
 var userSchema;
 
 userSchema = new Schema({
@@ -14,7 +14,8 @@ userSchema = new Schema({
 
 mongoose.model('User', userSchema);
 mongoose.connect(mongoURI, function(err) {
-    debug('Error while connecting to database: ' + err);
+    if (err)
+        debug('Error while connecting to database: ' + err);
 });
 
 mongoose.connection.on('connected', function () {
