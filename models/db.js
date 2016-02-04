@@ -4,7 +4,9 @@ var mongoose = require('mongoose');
 var debug = require('debug')('chat:db');
 var Schema = mongoose.Schema;
 // var mongoURI = 'mongodb://localhost:27017/chatDB';
-var mongoURI = 'mongodb://192.168.1.9:27017/chatDB';
+//var mongoURI = 'mongodb://192.168.1.9:27017/chatDB';
+var mongoURI = 'mongodb://10.0.0.4:27017/chatDB';
+
 var userSchema;
 
 userSchema = new Schema({
