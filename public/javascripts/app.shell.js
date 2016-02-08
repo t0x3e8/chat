@@ -74,7 +74,8 @@ app.shell = (function () {
     }
     
     newMsgEvent = function(data) {
-        app.chat.newMsg(data.msg);
+        if (app.chat)
+            app.chat.newMsg(data.msg);
     }
 
     initChat = function ($chat, person) {

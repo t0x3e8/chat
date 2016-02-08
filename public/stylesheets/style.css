@@ -89,6 +89,19 @@
     display: block;
 }
 
+span.msg-number {
+    float: right;
+    border: 1px solid grey;
+    /* padding: 5px; */
+    border-radius: 15px;
+    width: 20;
+    height: 20px;
+    text-align: center;
+    vertical-align: middle;
+    /*color: red;*/
+    line-height: 18px;
+}
+
 .people-content p:hover {
 	font-weight: bold;
 }
