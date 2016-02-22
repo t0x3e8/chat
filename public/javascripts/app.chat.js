@@ -1,11 +1,13 @@
 /* global app */
 
-app.chat = (function () {
+app.chat = function () {
     'use strict';
 
     var configMap = {
         mainHtml: String() +
-        '<div class="bar"><span class="bar-header"></span></div>' +
+        '<div class="bar"><span class="bar-header"></span>' +
+        '<span class="chat-close"><button class="chat-close-button">X</button></span>' +
+        '</div>' +
         '<ul class="chat-content"></ul>' +
         '<div class="chat-interaction">' +
         '<div class="chat-input"><input type="text"></input></div>' +
@@ -13,17 +15,19 @@ app.chat = (function () {
         '</div>',
         connection: null,
         chattee: null,
-        me: null
+        me: null,
+        closeChatCallback: null 
     },
         jQueryMap = {
             $header: null,
             $container: null,
             $sendBtn: null,
             $chatInput: null,
-            $msgs: null
+            $msgs: null,
+            $chatCloseBtn: null
         },
-        initModule, configModule, setjQueryMap, setEvents, sendMessageEvent, newMsg,
-        displayMsg;
+        initModule, configModule, setjQueryMap, setEvents, sendMessageEvent, closeChatEvent, newMsg,
+        getChateeId, displayMsg;
 
     sendMessageEvent = function () {
         var msg = '';
@@ -35,10 +39,23 @@ app.chat = (function () {
             if (configMap.connection) {
                 configMap.connection.emitMsg(msg, configMap.me._id, configMap.chattee._id);
                 displayMsg(msg, true);
-                
+
                 jQueryMap.$chatInput.val('');
             }
         }
+    };
+    
+    closeChatEvent = function() {
+        if (configMap.closeChatCallback) {
+            configMap.closeChatCallback(configMap.chattee._id);
+        }
+    };
+
+    getChateeId = function () {
+        if (configMap.chattee)
+            return configMap.chattee._id;
+        else
+            null;
     };
 
     newMsg = function (msg) {
@@ -47,10 +64,10 @@ app.chat = (function () {
 
     displayMsg = function (msg, isMe) {
         var cssClass = 'chat-msg' + ((isMe) ? '' : ' chat-msg-right');
-        
+
         $('<li/>', {
             'text': msg,
-            'class': cssClass            
+            'class': cssClass
         }).appendTo(jQueryMap.$msgs);
     };
 
@@ -60,10 +77,12 @@ app.chat = (function () {
         jQueryMap.$sendBtn = $container.find('.chat-send input');
         jQueryMap.$chatInput = $container.find('.chat-input input');
         jQueryMap.$msgs = $container.find('.chat-content');
+        jQueryMap.$chatCloseBtn = $container.find('.chat-close-button');
     };
 
     setEvents = function () {
         jQueryMap.$sendBtn.on('click', sendMessageEvent);
+        jQueryMap.$chatCloseBtn.on('click', closeChatEvent);
     };
 
     initModule = function ($container) {
@@ -86,6 +105,7 @@ app.chat = (function () {
     return {
         'initModule': initModule,
         'configModule': configModule,
-        'newMsg': newMsg
+        'newMsg': newMsg,
+        'getChateeId': getChateeId
     };
-})();
+}

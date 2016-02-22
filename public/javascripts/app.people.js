@@ -24,40 +24,71 @@ app.people = (function () {
             $container: null,
             $peopleList: null
         },
-        initModule, configModule, populatePeople, setjQueryMap;
+        peopleCollection = [],
+        initModule, configModule, setPeopleCollection, visualizePeopleList, setjQueryMap, setNotification, resetNotifications;
 
     setjQueryMap = function ($container) {
         jQueryMap.$peopleList = $container.find('.people-content');
     };
 
-    populatePeople = function (data) {
-        var i, currentUserId, $newElement, personSelectedCallback;
-        console.log('people list: ' + data);
+    setPeopleCollection = function (data) {
+        peopleCollection = [];
 
-        // clean list
+        data.forEach(function (personData) {
+            peopleCollection.push({ name: personData.name, msgCount: 0, data: personData });
+        });
+    }
+
+    visualizePeopleList = function () {
+        var currentUserId, $personElement, $msgNotificationElement, $personName, personSelectedCallback;
+
         jQueryMap.$peopleList.empty();
-        
-        // populate list
-        if (data) {
+
+        if (peopleCollection) {
             currentUserId = configMap.peopleModel.getCurrentUser()._id;
-                    
+
             personSelectedCallback = function (person) {
                 return function () {
                     app.messenger.notify('chat-startchat', person);
                 }
             }
 
-            for (i = 0; i < data.length; i++) {
-                $newElement = $('<p>').html(data[i].name);
+            peopleCollection.forEach(function (person) {
+                $personElement = $('<div>');
+                $personName = $('<span>').addClass('name').html(person.name);
+                $msgNotificationElement = $('<span>').addClass('msg-number');
+                $personElement.append($personName);
 
-                if (data[i]._id === currentUserId)
-                    $newElement.addClass('me');
+                if (person.data._id === currentUserId)
+                    $personName.addClass('me');
                 else {
-                    $newElement.on('dblclick', personSelectedCallback(data[i]));
+                    $personElement.on('dblclick', personSelectedCallback(person.data));
+                    if (person.msgCount > 0) {
+                        $msgNotificationElement.html(person.msgCount);
+                        $personElement.append($msgNotificationElement);
+                    }
                 }
-                jQueryMap.$peopleList.append($newElement);
-            }
+                jQueryMap.$peopleList.append($personElement);
+            });
         }
+    };
+
+    setNotification = function (personId) {
+        peopleCollection.forEach(function (person) {
+            if (person.data._id === personId)
+                person.msgCount += 1;
+        });
+
+        visualizePeopleList();
+    };
+
+    resetNotifications = function (personId) {
+        peopleCollection.forEach(function (person) {
+            if (person.data._id === personId)
+                person.msgCount = 0;;
+        });
+
+        visualizePeopleList();
     };
 
     initModule = function ($container) {
@@ -66,11 +97,20 @@ app.people = (function () {
 
         setjQueryMap($container);
 
-        populatePeople();
-
         app.messenger.subscribe({
             'eventName': 'peopleUpdated',
-            'action': populatePeople
+            'action': function (data) {
+                setPeopleCollection(data);
+                visualizePeopleList();
+            }
+        });
+        app.messenger.subscribe({
+            'eventName': 'setNotificationForPerson',
+            'action': setNotification
+        });
+        app.messenger.subscribe({
+            'eventName': 'resetNotificationForPerson',
+            'action': resetNotifications
         });
     };
 
@@ -83,6 +123,8 @@ app.people = (function () {
 
     return {
         'initModule': initModule,
-        'configModule': configModule
+        'configModule': configModule,
+        'setNotification': setNotification,
+        'resetNotifications': resetNotifications
     };
 })();

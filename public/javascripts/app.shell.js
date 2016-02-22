@@ -16,11 +16,11 @@ app.shell = (function () {
     'use strict';
 
     var mainHtml = String() +
-            '<div class="logging"><span>LOG IN</span></div>' +
-            '<div class="people box"></div>' +
-            '<div class="chat box box1 hidden"></div>' +
-            '<div class="chat box box2 hidden"></div>' +
-            '<div class="chat box box3 hidden"></div>',
+        '<div class="logging"><span>LOG IN</span></div>' +
+        '<div class="people box"></div>' +
+        '<div class="chat box box1 hidden"></div>' +
+        '<div class="chat box box2 hidden"></div>' +
+        '<div class="chat box box3 hidden"></div>',
         peopleModel = null,
         connection = null,
         jQueryMap = {
@@ -31,8 +31,9 @@ app.shell = (function () {
             $chat3: null,
             $people: null
         },
+        chats = [],
         raiseLoginEvent, startNewChatEvent, newMsgEvent,
-        setjQueryMap, setEvents, initModule, initChat;
+        setjQueryMap, setEvents, initModule, initChat,  closeChat, findChatWithPerson, findChatIndexWithPerson;
 
     setjQueryMap = function ($container) {
         jQueryMap.$logging = $container.children('.logging');
@@ -44,9 +45,9 @@ app.shell = (function () {
 
     setEvents = function () {
         jQueryMap.$logging.on('click', raiseLoginEvent);
-        
-        app.messenger.subscribe({ eventName: 'chat-startchat', action: startNewChatEvent })
-        app.messenger.subscribe({ eventName: 'newMsg', action: newMsgEvent});
+
+        app.messenger.subscribe({ eventName: 'chat-startchat', action: startNewChatEvent });
+        app.messenger.subscribe({ eventName: 'newMsg', action: newMsgEvent });
     };
 
     raiseLoginEvent = function (event) {
@@ -68,23 +69,75 @@ app.shell = (function () {
         });
     }
 
-    startNewChatEvent = function (person) {
-        jQueryMap.$chat1.show(300);
-        initChat(jQueryMap.$chat1, person);
+    newMsgEvent = function (data) {
+        var personId = data.fromId,
+            msg = data.msg,
+            chat = null;
+
+        chat = findChatWithPerson(personId);
+        if (chat)
+            chat.newMsg(msg);
+        else
+            app.messenger.notify('setNotificationForPerson', personId);
     }
-    
-    newMsgEvent = function(data) {
-        if (app.chat)
-            app.chat.newMsg(data.msg);
+
+    startNewChatEvent = function (person) {
+        initChat(jQueryMap.$chat1, person);
+
+        app.messenger.notify('resetNotificationForPerson', person._id);
     }
 
     initChat = function ($chat, person) {
-        app.chat.configModule({
-            'connection': connection,
-            'me' : peopleModel.getCurrentUser(),
-            'chattee': person
+        var newChat;
+
+        if (!findChatWithPerson(person._id)) {
+            jQueryMap.$chat1.show(300);
+
+            newChat = app.chat();
+            newChat.configModule({
+                'connection': connection,
+                'me': peopleModel.getCurrentUser(),
+                'chattee': person,
+                'closeChatCallback': closeChat
+            });
+            newChat.initModule($chat);
+            chats.push(newChat);
+        }
+    };
+
+    closeChat = function (chatteeId) {
+        var chatIndex;
+
+        chatIndex = findChatIndexWithPerson(chatteeId);
+        if (chatIndex >= 0) {
+            jQueryMap.$chat1.empty();
+            jQueryMap.$chat1.hide(300);
+            chats.splice(chatIndex, 1);
+        }
+    };
+
+    findChatWithPerson = function (personId) {
+        var result = null;
+
+        result = chats.find(function (chat, index, array) {
+            if (personId === chat.getChateeId())
+                return true;
         });
-        app.chat.initModule($chat);
+
+        return result;
+    };
+
+    findChatIndexWithPerson = function (personId) {
+        var result = null, i;
+
+        for (i = 0; i < chats.length; i++) {
+            if (personId === chats[i].getChateeId()) {
+                result = i;
+                break;
+            }
+        }
+        
+        return result;
     }
 
     initModule = function ($container) {
@@ -95,7 +148,7 @@ app.shell = (function () {
         app.model.initModule();
         peopleModel = app.model.people;
         connection = app.connection;
-        
+
         app.people.configModule({
             'peopleModel': peopleModel
         });

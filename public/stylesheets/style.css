@@ -17,6 +17,27 @@
 	font-size: larger;
 }
 
+.chat-close {
+    height: auto;
+    float: right;
+    margin-right: 5px;
+}
+
+.chat-close-button {
+    height: 100%;
+    width: 100%;
+    border: none;
+    background: transparent;
+    color: white;
+    font-weight: bold;
+    font-size: 11pt;
+    outline: none;
+}
+
+.chat-close-button:hover {
+    color: steelblue;
+}
+
 .box {
 	border: 0.1em lightgrey solid;
 	border-top-left-radius: 1em;
@@ -83,26 +104,33 @@
 	bottom: 0;
 }
 
-.people-content p {
+.people-content div {
 	padding-left: 1em;
 	padding-right: 1em;
+    padding-top: .6em;
+    font-size: 1.2em;
     display: block;
 }
 
-span.msg-number {
-    float: right;
-    border: 1px solid grey;
-    /* padding: 5px; */
-    border-radius: 15px;
-    width: 20;
-    height: 20px;
-    text-align: center;
-    vertical-align: middle;
-    /*color: red;*/
-    line-height: 18px;
+.people-content .name {
+	width: 80%;
 }
 
-.people-content p:hover {
+.people-content .msg-number {
+    float: right;
+    border: 1px solid black ;
+    /* padding: 5px; */
+    border-radius: 1em;
+    width: 1.4em;
+    height: 1.4em;
+    text-align: center;
+    vertical-align: middle;
+    color: black;
+    line-height: 1.4em;
+    font-size: 0.7em;
+}
+
+.people-content span:hover {
 	font-weight: bold;
 }
 

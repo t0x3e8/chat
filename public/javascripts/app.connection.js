@@ -12,8 +12,9 @@
 
 app.connection = (function () {
     'use strict';
-
-    var socket = io('http://testwebapp810.azurewebsites.net:3001', { autoConnect: false }),
+    
+    var address = 'http://localhost:3001'; // window.location.protocol + '//' + window.location.host;
+    var socket = io(address, { autoConnect: false }),
         connect, disconnect, emitLogin, subscribeEvents, unsubscribeEvents, emitMsg, receiveMsg;
     var peopleListEvent = 'chat-peoplelist',
         msgEvent = 'chat-msg';
