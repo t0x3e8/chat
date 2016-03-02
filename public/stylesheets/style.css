@@ -159,29 +159,41 @@
 }
 
 .chat-msg {
-	clear: both;
-	float: left;
-	position: relative;
-	width: auto;
-	border: solid 0.1 em rgba(0, 0, 0, 0.5);
-	border-radius: 1em;
-	word-wrap: break-word;
-	margin-bottom: .7em;
-	padding: .5em 1em;
-	box-sizing: border-box;
-	text-shadow: 0 .1em .1em rgba(255, 255, 255, 0.7);
-    background-color: gainsboro;
+    clear: both;
     list-style-type: none;
-    margin-left: 0;
-    margin-right: 2em;
+	float: left;
+    height: auto;
+    margin: 0 2em .7em 0;
+    display: flex;
 }
 
-.chat-msg-right {
+.chat-msg-right {    
 	float: right;
-    background-color: lightblue;
-    text-align: right;
     margin-left: 2em;
     margin-right: 0;
+    text-align: right;
+}
+
+.chat-msg-text {
+	padding: .5em 1em;
+    display: inline-block;
+    border: solid 0.1em rgba(0, 0, 0, 0.5);
+	border-radius: 1em;
+	box-sizing: border-box;
+	text-shadow: 0 .1em .1em rgba(255, 255, 255, 0.7);
+	word-wrap: break-word;
+    width: auto;
+    background-color: lightblue;
+    margin: 0 .2em;
+}
+
+.chat-msg-text-rigth {
+    background-color: gainsboro;
+    margin-left: 1em;
+}
+
+.chat-msg-time {
+    margin: auto;
 }
 
 .chat-interaction {	

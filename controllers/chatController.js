@@ -43,7 +43,7 @@ var chatController = function (io) {
             var toId = msgMap.toId;
 
             User.findById(toId, function (err, recipient) {
-                if (io.sockets.connected[recipient.socketId])
+                if (recipient !== null && io.sockets.connected[recipient.socketId])
                     io.sockets.connected[recipient.socketId].emit(msgEvent, { msg: msg, fromId: fromId });
             });
         });

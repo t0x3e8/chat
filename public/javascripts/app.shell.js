@@ -26,20 +26,21 @@ app.shell = (function () {
         jQueryMap = {
             $container: null,
             $logging: null,
-            $chat1: null,
-            $chat2: null,
-            $chat3: null,
             $people: null
         },
-        chats = [],
-        raiseLoginEvent, startNewChatEvent, newMsgEvent,
-        setjQueryMap, setEvents, initModule, initChat,  closeChat, findChatWithPerson, findChatIndexWithPerson;
+        chatSlots = [
+            { chatInstance: null, $chat: null, chateeId: undefined },
+            { chatInstance: null, $chat: null, chateeId: undefined },
+            { chatInstance: null, $chat: null, chateeId: undefined }
+        ],
+        raiseLoginEvent, startNewChatEvent, newMsgEvent, peopleUpdateEvent,
+        setjQueryMap, setEvents, initModule, openChat, closeChat, findChatWithChatee, findFreeChatSlot;
 
     setjQueryMap = function ($container) {
         jQueryMap.$logging = $container.children('.logging');
-        jQueryMap.$chat1 = $container.find('.box1');
-        jQueryMap.$chat2 = $container.find('.box2');
-        jQueryMap.$chat3 = $container.find('.box3');
+        chatSlots[0].$chat = $container.find('.box1');
+        chatSlots[1].$chat = $container.find('.box2');
+        chatSlots[2].$chat = $container.find('.box3');
         jQueryMap.$people = $container.find('.people');
     };
 
@@ -48,6 +49,7 @@ app.shell = (function () {
 
         app.messenger.subscribe({ eventName: 'chat-startchat', action: startNewChatEvent });
         app.messenger.subscribe({ eventName: 'newMsg', action: newMsgEvent });
+                app.messenger.subscribe({'eventName': 'peopleUpdated', 'action': peopleUpdateEvent});
     };
 
     raiseLoginEvent = function (event) {
@@ -70,75 +72,92 @@ app.shell = (function () {
     }
 
     newMsgEvent = function (data) {
-        var personId = data.fromId,
+        var chateeId = data.fromId,
             msg = data.msg,
-            chat = null;
+            chatSlot = null;
 
-        chat = findChatWithPerson(personId);
-        if (chat)
-            chat.newMsg(msg);
+        chatSlot = findChatWithChatee(chateeId);
+        console.log(chatSlot);
+        if (chatSlot != undefined && chatSlot.chateeId !== undefined)
+            chatSlot.chatInstance.newMsg(msg);
         else
-            app.messenger.notify('setNotificationForPerson', personId);
-    }
+            app.messenger.notify('setNotificationForPerson', chateeId);
+    };
+    
+    peopleUpdateEvent = function (people) {
+        // Go through all open chats and check if chatee is available
+        chatSlots.forEach(function (chat) {
+           var chatNotAvailable;
+           chatNotAvailable = people.find(function (person) {
+               return person._id === chat.chateeId;
+           });
+           
+           if (chatNotAvailable!== null){
+               chat.chatInstance.disconnect();
+           }
+        });
+    };
 
     startNewChatEvent = function (person) {
-        initChat(jQueryMap.$chat1, person);
+        if (openChat(person) === true)
+            app.messenger.notify('resetNotificationForPerson', person._id);
+    };   
 
-        app.messenger.notify('resetNotificationForPerson', person._id);
-    }
+    openChat = function (person) {
+        var chatSlot = findChatWithChatee(person._id);
 
-    initChat = function ($chat, person) {
-        var newChat;
+        if (chatSlot === undefined) {
+            chatSlot = findFreeChatSlot();
 
-        if (!findChatWithPerson(person._id)) {
-            jQueryMap.$chat1.show(300);
+            if (chatSlot === undefined) {
+                alert('Maximum 3 chats are available.');
+                return false;
+            }
 
-            newChat = app.chat();
-            newChat.configModule({
+            chatSlot.chateeId = person._id;
+            chatSlot.$chat.show(300);
+            chatSlot.chatInstance = app.chat();
+            chatSlot.chatInstance.configModule({
                 'connection': connection,
                 'me': peopleModel.getCurrentUser(),
                 'chattee': person,
                 'closeChatCallback': closeChat
             });
-            newChat.initModule($chat);
-            chats.push(newChat);
+            chatSlot.chatInstance.initModule(chatSlot.$chat);
+           
+            return true;
+        }
+        else {
+            chatSlot.chatInstance.blinks();
+            return false;
         }
     };
 
     closeChat = function (chatteeId) {
-        var chatIndex;
+        var chatSlot;
 
-        chatIndex = findChatIndexWithPerson(chatteeId);
-        if (chatIndex >= 0) {
-            jQueryMap.$chat1.empty();
-            jQueryMap.$chat1.hide(300);
-            chats.splice(chatIndex, 1);
+        chatSlot = findChatWithChatee(chatteeId);
+        if (chatSlot) {
+            chatSlot.$chat.empty();
+            chatSlot.$chat.hide(300);
+            chatSlot.chatInstance = undefined;
+            chatSlot.chateeId = undefined;
         }
     };
 
-    findChatWithPerson = function (personId) {
-        var result = null;
-
-        result = chats.find(function (chat, index, array) {
-            if (personId === chat.getChateeId())
+    findChatWithChatee = function (chateeId) {
+        return chatSlots.find(function (entry, index, array) {
+            if (chateeId === entry.chateeId)
                 return true;
         });
-
-        return result;
     };
 
-    findChatIndexWithPerson = function (personId) {
-        var result = null, i;
-
-        for (i = 0; i < chats.length; i++) {
-            if (personId === chats[i].getChateeId()) {
-                result = i;
-                break;
-            }
-        }
-        
-        return result;
-    }
+    findFreeChatSlot = function () {
+        return chatSlots.find(function (entry, index, array) {
+            if (entry.chateeId === undefined)
+                return true;
+        });
+    };
 
     initModule = function ($container) {
         jQueryMap.$container = $container;

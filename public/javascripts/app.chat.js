@@ -11,12 +11,12 @@ app.chat = function () {
         '<ul class="chat-content"></ul>' +
         '<div class="chat-interaction">' +
         '<div class="chat-input"><input type="text"></input></div>' +
-        '<div class="chat-send"><input type="submit"></input></div>' +
+        '<div class="chat-send"><input type="submit" value="Send"></input></div>' +
         '</div>',
         connection: null,
         chattee: null,
         me: null,
-        closeChatCallback: null 
+        closeChatCallback: null
     },
         jQueryMap = {
             $header: null,
@@ -26,8 +26,8 @@ app.chat = function () {
             $msgs: null,
             $chatCloseBtn: null
         },
-        initModule, configModule, setjQueryMap, setEvents, sendMessageEvent, closeChatEvent, newMsg,
-        getChateeId, displayMsg;
+        initModule, configModule, setjQueryMap, setEvents, sendMessageEvent, sendMessageKeyEvent, closeChatEvent, newMsg,
+        getChateeId, displayMsg, blinks, addZero, disconnect;
 
     sendMessageEvent = function () {
         var msg = '';
@@ -44,8 +44,14 @@ app.chat = function () {
             }
         }
     };
-    
-    closeChatEvent = function() {
+
+    sendMessageKeyEvent = function (event) {
+        console.log('key pressed: ' + event);
+        if (event.which === 13)
+            sendMessageEvent();
+    }
+
+    closeChatEvent = function () {
         if (configMap.closeChatCallback) {
             configMap.closeChatCallback(configMap.chattee._id);
         }
@@ -62,13 +68,51 @@ app.chat = function () {
         displayMsg(msg, false);
     };
 
-    displayMsg = function (msg, isMe) {
-        var cssClass = 'chat-msg' + ((isMe) ? '' : ' chat-msg-right');
+    addZero = function (i) {
+        if (i < 10) {
+            i = "0" + i;
+        }
+        return i;
+    };
 
-        $('<li/>', {
-            'text': msg,
-            'class': cssClass
-        }).appendTo(jQueryMap.$msgs);
+    displayMsg = function (msg, isMe) {
+        var cssMsgClass = 'chat-msg' + ((isMe) ? '' : ' chat-msg-right'),
+            cssMsgTextClass = 'chat-msg-text' + ((isMe) ? '' : ' chat-msg-text-rigth'),
+            cssMsgTimeClass = 'chat-msg-time',
+            dateNow = new Date(),
+            timeString,
+            msgTimeSpan, msgSpan, msgListItem;
+
+        timeString = addZero(dateNow.getHours()) + ':' + addZero(dateNow.getMinutes());
+        msgSpan = $('<span />').text(msg).addClass(cssMsgTextClass);
+        msgTimeSpan = $('<span />').text(timeString).addClass(cssMsgTimeClass);
+        msgListItem = $('<li />').addClass(cssMsgClass);
+
+        // should it be time+msg or msg+time?
+        if (isMe)
+            $(msgListItem).append(msgTimeSpan).append(msgSpan);
+        else
+            $(msgListItem).append(msgSpan).append(msgTimeSpan);
+        
+        // add msg list item to html list
+        $(msgListItem).appendTo(jQueryMap.$msgs);
+        
+        // animate to last item
+        console.log($(jQueryMap.$msgs).height());
+        $(jQueryMap.$msgs).animate({ scrollTop: $(jQueryMap.$msgs)[0].scrollHeight }, { queue: false });
+    };
+
+    blinks = function () {
+        $(jQueryMap.$header).animate({ opacity: 0 }, 200, "linear", function () {
+            $(this).animate({ opacity: 1 }, 200);
+        });
+    };
+
+    disconnect = function () {
+        $(jQueryMap.$chatInput).val('User not available');
+
+        $(jQueryMap.$sendBtn).prop('disabled', true);
+        $(jQueryMap.$chatInput).prop('disabled', true);
     };
 
     setjQueryMap = function ($container) {
@@ -83,6 +127,7 @@ app.chat = function () {
     setEvents = function () {
         jQueryMap.$sendBtn.on('click', sendMessageEvent);
         jQueryMap.$chatCloseBtn.on('click', closeChatEvent);
+        $(jQueryMap.$chatInput).keypress(sendMessageKeyEvent);
     };
 
     initModule = function ($container) {
@@ -93,6 +138,9 @@ app.chat = function () {
         console.log(jQueryMap.$header);
 
         setEvents();
+
+        // activate the chat
+        $(jQueryMap.$chatInput).focus();
     };
 
     configModule = function (inputMap) {
@@ -106,6 +154,8 @@ app.chat = function () {
         'initModule': initModule,
         'configModule': configModule,
         'newMsg': newMsg,
-        'getChateeId': getChateeId
+        'getChateeId': getChateeId,
+        'blinks': blinks,
+        'disconnect': disconnect
     };
 }
