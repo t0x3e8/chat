@@ -49,7 +49,7 @@ app.shell = (function () {
 
         app.messenger.subscribe({ eventName: 'chat-startchat', action: startNewChatEvent });
         app.messenger.subscribe({ eventName: 'newMsg', action: newMsgEvent });
-                app.messenger.subscribe({'eventName': 'peopleUpdated', 'action': peopleUpdateEvent});
+        app.messenger.subscribe({ 'eventName': 'peopleUpdated', 'action': peopleUpdateEvent });
     };
 
     raiseLoginEvent = function (event) {
@@ -83,25 +83,32 @@ app.shell = (function () {
         else
             app.messenger.notify('setNotificationForPerson', chateeId);
     };
-    
+
     peopleUpdateEvent = function (people) {
         // Go through all open chats and check if chatee is available
-        chatSlots.forEach(function (chat) {
-           var chatNotAvailable;
-           chatNotAvailable = people.find(function (person) {
-               return person._id === chat.chateeId;
-           });
-           
-           if (chatNotAvailable!== null){
-               chat.chatInstance.disconnect();
-           }
-        });
+        var i, j, isChateAvailable;
+
+        for (i = 0; i < chatSlots.length; i++) {
+            isChateAvailable = false;
+            if (chatSlots[i].chateeId !== undefined) {
+                for (j = 0; j < people.length; j++) {
+                    if (chatSlots[i].chateeId === people[j]._id) {
+                        isChateAvailable = true;
+                        break;
+                    }
+                }
+
+                if (!isChateAvailable && chatSlots[i].chatInstance !== null) {
+                    chatSlots[i].chatInstance.disconnect();
+                }
+            }
+        }
     };
 
     startNewChatEvent = function (person) {
         if (openChat(person) === true)
             app.messenger.notify('resetNotificationForPerson', person._id);
-    };   
+    };
 
     openChat = function (person) {
         var chatSlot = findChatWithChatee(person._id);
@@ -124,7 +131,7 @@ app.shell = (function () {
                 'closeChatCallback': closeChat
             });
             chatSlot.chatInstance.initModule(chatSlot.$chat);
-           
+
             return true;
         }
         else {

@@ -18,7 +18,6 @@ var chatController = function (io) {
             .find()
             .exec(function (err, users) {
                 io.emit(peopleListEvent, users);
-                // io.emit(peopleListEvent, [{name:'jarek'}, {name:'aga'} ]);
             });
     };
 
